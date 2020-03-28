@@ -1,6 +1,7 @@
 require "digest"
 require "securerandom"
 require_relative "./errors"
+require_relative "./phone_numbers"
 
 module Grouping
   class Matcher
@@ -114,65 +115,28 @@ module Grouping
     # Normalize phone number to digits only and exclude US country code (1)
     # if present.
     def normalize_value(value)
-      digits = value&.gsub(/\D/, "")
-      if digits && digits.size == 11 && digits[0] == "1"
-        digits[1..-1]
+      Grouping.normalize_us_phone_number(value)
+    end
+  end
+
+  class SameEmailOrPhoneMatchingType < BaseMatchingType
+    def columns
+      @columns ||= begin
+                     column_names.each_index
+                       .select { |key| column_names[key].match(/\A(phone|email)/i) }
+                   end
+    end
+
+    private
+
+    # Normalize phone number to digits only and exclude US country code (1)
+    # if present.
+    def normalize_value(value)
+      if value && value.include?('@')
+        value
       else
-        digits
+        Grouping.normalize_us_phone_number(value)
       end
-    end
-  end
-
-  class OrMatchingCombinator
-    attr_accessor :rows, :column_names
-
-    def initialize(column_names, rows, matcher_a_class, matcher_b_class)
-      @column_names = column_names
-      @rows = rows
-      @matcher_a = matcher_a_class.new(column_names, rows)
-      @matcher_b = matcher_b_class.new(column_names, rows)
-      @row_id_pairs = []
-      @id_map = {}
-      @map_a = {}
-      @map_b = {}
-      @row_ids = []
-    end
-
-    def call
-      @row_id_pairs = []
-      (0...rows.size).each do |i|
-        id_a = @matcher_a[i]
-        @map_a[id_a] = (@map_a[id_a] || 0) + 1
-        id_b = @matcher_b[i]
-        @map_b[id_b] = (@map_b[id_b] || 0) + 1
-        @row_id_pairs.push([id_a, id_b])
-      end
-      (0...rows.size).each do |i|
-        id_a, id_b = @row_id_pairs[i]
-        id = if @map_a[id_a] > 1 || @map_b[id_b] > 1
-          id = @id_map[id_a] || @id_map[id_b]
-          id ||= SecureRandom.hex(5)
-          @id_map[id_a] = id
-          @id_map[id_b] = id
-          id
-        else
-          SecureRandom.hex(5)
-        end
-      @row_ids.push(id)
-      end
-    end
-
-    # Returns the ID for the row with given row index.
-    def [](idx)
-      call if @row_ids.empty?
-      @row_ids[idx]
-    end
-
-  end
-
-  class SameEmailOrPhoneMatchingType < OrMatchingCombinator
-    def initialize(column_names, rows)
-      super(column_names, rows, SameEmailMatchingType, SamePhoneMatchingType)
     end
   end
 end
