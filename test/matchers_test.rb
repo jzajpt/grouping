@@ -1,7 +1,7 @@
 require "test_helper"
 
 class MatchersTest < Minitest::Test
-  def test_same_email_identify_returns_unique_id_for_diff_emails
+  def test_email_matching_returns_unique_id_for_diff_emails
     columns = ["Email"]
     rows = [["joe.doe@gmail.com"],
             ["jane.doe@gmail.com"]]
@@ -9,7 +9,7 @@ class MatchersTest < Minitest::Test
     refute_equal matcher[0], matcher[1]
   end
 
-  def test_same_email_identify_returns_same_id_for_same_emails
+  def test_email_matching_returns_same_id_for_same_emails
     columns = ["Email"]
     row1 = ["joe.doe@gmail.com"]
     rows = [row1, row1.dup]
@@ -17,7 +17,7 @@ class MatchersTest < Minitest::Test
     assert_equal matcher[0], matcher[1]
   end
 
-  def test_same_email_identify_returns_same_id_for_same_emails_in_multiple_cols
+  def test_email_matching_returns_same_id_for_same_emails_in_multiple_cols
     columns = %w[Email1 Email2]
     rows = [["joe.doe@gmail.com", "jane.doe@gmail.com"],
             ["jane.doe@gmail.com", ""],
@@ -28,7 +28,7 @@ class MatchersTest < Minitest::Test
     refute_equal matcher[1], matcher[2]
   end
 
-  def test_same_email_identify_returns_same_id_for_same_emails_in_multiple_cols
+  def test_email_matching_returns_same_id_for_same_emails_transient
     columns = %w[Email1 Email2]
     rows = [["joe.doe@gmail.com", "jane.doe@gmail.com"],
             ["jane.doe@gmail.com", "bob.doe@gmail.com"],
@@ -39,7 +39,7 @@ class MatchersTest < Minitest::Test
     assert_equal matcher[1], matcher[2]
   end
 
-  def test_same_phone_identify_returns_unique_id_for_diff_phone
+  def test_phone_identify_returns_unique_id_for_diff_phone
     columns = ["Phone"]
     rows = [["(555) 123-4567"],
             ["(555) 543-3211"]]
@@ -47,7 +47,7 @@ class MatchersTest < Minitest::Test
     refute_equal matcher[0], matcher[1]
   end
 
-  def test_same_phone_identify_returns_same_id_for_same_phone
+  def test_phone_identify_returns_same_id_for_same_phone
     columns = ["Phone"]
     rows = [["(555) 123-4567"],
             ["(555) 123-4567"],
@@ -58,7 +58,7 @@ class MatchersTest < Minitest::Test
     refute_equal matcher[2], matcher[0]
   end
 
-  def test_same_phone_identify_returns_same_id_for_same_phone_syntax
+  def test_phone_identify_returns_same_id_for_same_phone_syntax
     columns = ["Phone"]
     rows = [["(555) 123-4567"],
             ["555-123-4567"]]
@@ -66,7 +66,7 @@ class MatchersTest < Minitest::Test
     assert_equal matcher[0], matcher[1]
   end
 
-  def test_same_phone_returns_same_id_for_same_phone_with_us_code
+  def test_phone_returns_same_id_for_same_phone_with_us_code
     columns = ["Phone"]
     rows = [["(555) 123-4567"],
             ["1-555-123-4567"]]
@@ -74,7 +74,7 @@ class MatchersTest < Minitest::Test
     assert_equal matcher[0], matcher[1]
   end
 
-  def test_same_phone_or_email_identify_matches_emails_and_phones_separately
+  def test_phone_or_email_identify_matches_emails_and_phones_separately
     columns = %w[Phone Email]
     rows = [["(555) 123-4567", "joe@doe.com"],
             ["444-123-4567", "jane@doe.com"],
@@ -89,7 +89,7 @@ class MatchersTest < Minitest::Test
     refute_equal matcher[4], matcher[1]
   end
 
-  def test_same_phone_or_email_identify_matches_emails_and_phones_transiently
+  def test_phone_or_email_identify_matches_emails_and_phones_transiently
     columns = %w[Phone Email]
     rows = [["(555) 123-4567", "joe@doe.com"],
             ["555-123-4567", "jane@doe.com"],

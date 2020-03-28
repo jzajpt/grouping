@@ -15,5 +15,3 @@ class PhoneNumbersTest < Minitest::Test
       Grouping.normalize_us_phone_number("13331234567")
   end
 end
-
-

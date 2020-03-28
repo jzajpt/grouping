@@ -123,16 +123,16 @@ module Grouping
     def columns
       @columns ||= begin
                      column_names.each_index
-                       .select { |key| column_names[key].match(/\A(phone|email)/i) }
+                       .select do |key|
+                         column_names[key].match(/\A(phone|email)/i)
+                       end
                    end
     end
 
     private
 
-    # Normalize phone number to digits only and exclude US country code (1)
-    # if present.
     def normalize_value(value)
-      if value && value.include?('@')
+      if value&.include?("@")
         value
       else
         Grouping.normalize_us_phone_number(value)
