@@ -3,4 +3,4 @@
 require "bundler/setup"
 require "grouping"
 
-Grouping::App.start()
+Grouping::App.start

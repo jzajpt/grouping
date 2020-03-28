@@ -22,3 +22,9 @@ Where matching type can be one of following:
 * same_phone - matches records with the same phone number
 * same_email_or_phone - matches records with the same email address OR the same phone number
 
+## Test suite
+
+The program contains test-suite, to run it:
+
+    $ rake test
+

@@ -1,0 +1,82 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-performance
+
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.6
+
+Layout/ArgumentAlignment:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 42
+
+Metrics/ClassLength:
+  Max: 100
+  Exclude:
+    - test/**/*.rb
+
+Metrics/CyclomaticComplexity:
+  Max: 6
+
+Layout/LineLength:
+  Max: 80
+  Exclude:
+    - 'grouping.gemspec'
+
+Metrics/MethodLength:
+  Max: 25 # TODO: Lower to 10
+
+Metrics/PerceivedComplexity:
+  Max: 10 # TODO: Lower to 7
+
+Performance/RedundantMerge:
+  Enabled: false
+
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/HashAlignment:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+  Exclude:
+    - config/**/*
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Security/MarshalLoad:
+  Enabled: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
+Style/FormatStringToken:
+  Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+

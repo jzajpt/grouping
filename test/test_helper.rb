@@ -1,5 +1,4 @@
-$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
-require 'grouping'
-
-require 'minitest/autorun'
-require 'minitest/filesystem'
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+require "grouping"
+require "minitest/autorun"
+require "minitest/filesystem"
