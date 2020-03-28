@@ -28,6 +28,17 @@ class MatchersTest < Minitest::Test
     refute_equal matcher[1], matcher[2]
   end
 
+  def test_same_email_identify_returns_same_id_for_same_emails_in_multiple_cols
+    columns = %w[Email1 Email2]
+    rows = [["joe.doe@gmail.com", "jane.doe@gmail.com"],
+            ["jane.doe@gmail.com", "bob.doe@gmail.com"],
+            ["bob.doe@gmail.com", "robert.doe@gmail.com"]]
+    matcher = Grouping::SameEmailMatchingType.new(columns, rows)
+    assert_equal matcher[0], matcher[1]
+    assert_equal matcher[0], matcher[2]
+    assert_equal matcher[1], matcher[2]
+  end
+
   def test_same_phone_identify_returns_unique_id_for_diff_phone
     columns = ["Phone"]
     rows = [["(555) 123-4567"],
@@ -51,6 +62,14 @@ class MatchersTest < Minitest::Test
     columns = ["Phone"]
     rows = [["(555) 123-4567"],
             ["555-123-4567"]]
+    matcher = Grouping::SamePhoneMatchingType.new(columns, rows)
+    assert_equal matcher[0], matcher[1]
+  end
+
+  def test_same_phone_returns_same_id_for_same_phone_with_us_code
+    columns = ["Phone"]
+    rows = [["(555) 123-4567"],
+            ["1-555-123-4567"]]
     matcher = Grouping::SamePhoneMatchingType.new(columns, rows)
     assert_equal matcher[0], matcher[1]
   end

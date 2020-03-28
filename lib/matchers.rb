@@ -36,29 +36,8 @@ module Grouping
 
     # Run the matching algorithm.
     def call
-      rows.each do |row|
-        columns.each do |col|
-          value = normalize_value(row[col])
-          next unless value
-          @map[value] = (@map[value] || 0) + 1
-          @id_map[value] = SecureRandom.hex(5) if @map[value] > 1
-        end
-      end
-      @row_ids = []
-      rows.each do |row|
-        id_col = columns.find do |col|
-          value = normalize_value(row[col])
-          next unless value
-          @map[value] > 1
-        end
-        if id_col
-          value = normalize_value(row[id_col])
-          id = @id_map[value]
-        else
-          id ||= SecureRandom.hex(5)
-        end
-        @row_ids.push(id)
-      end
+      build_counter_map
+      identify_matching_rows
     end
 
     # Returns the ID for the row with given row index.
@@ -69,6 +48,43 @@ module Grouping
 
     def columns
       @column_names
+    end
+
+    private
+
+    # Find duplicates by building a "counter map" in linear, O(n) time.
+    def build_counter_map
+      rows.each do |row|
+        columns.each do |col|
+          value = normalize_value(row[col])
+          next unless value
+          @map[value] = (@map[value] || 0) + 1
+        end
+      end
+    end
+
+    # Identify the matching rows by checking if the identifiable columns that
+    # are specified by matching type (strategy) have any duplicates. If so,
+    # use the same ID for all duplicates.
+    def identify_matching_rows
+      @row_ids = []
+      rows.each_with_index do |row, idx|
+        id_cols = columns.select do |col|
+          value = normalize_value(row[col])
+          next unless value
+          @map[value] > 1
+        end
+        new_id = SecureRandom.hex(5)
+        id_cols.each do |id_col|
+          value = normalize_value(row[id_col])
+          if @id_map[value]
+            new_id = @id_map[value]
+          else
+            @id_map[value] = new_id
+          end
+        end
+        @row_ids[idx] = new_id
+      end
     end
 
     def normalize_value(value)
@@ -93,8 +109,17 @@ module Grouping
                    end
     end
 
+    private
+
+    # Normalize phone number to digits only and exclude US country code (1)
+    # if present.
     def normalize_value(value)
-      value&.gsub(/\D/, "")
+      digits = value&.gsub(/\D/, "")
+      if digits && digits.size == 11 && digits[0] == "1"
+        digits[1..-1]
+      else
+        digits
+      end
     end
   end
 
@@ -110,6 +135,7 @@ module Grouping
       @id_map = {}
       @map_a = {}
       @map_b = {}
+      @row_ids = []
     end
 
     def call
@@ -121,21 +147,27 @@ module Grouping
         @map_b[id_b] = (@map_b[id_b] || 0) + 1
         @row_id_pairs.push([id_a, id_b])
       end
-    end
-
-    def [](idx)
-      call if @row_id_pairs.empty?
-      id_a, id_b = @row_id_pairs[idx]
-      if @map_a[id_a] > 1 || @map_b[id_b] > 1
-        id = @id_map[id_a] || @id_map[id_b]
-        id ||= SecureRandom.hex(5)
-        @id_map[id_a] = id
-        @id_map[id_b] = id
-        id
-      else
-        SecureRandom.hex(5)
+      (0...rows.size).each do |i|
+        id_a, id_b = @row_id_pairs[i]
+        id = if @map_a[id_a] > 1 || @map_b[id_b] > 1
+          id = @id_map[id_a] || @id_map[id_b]
+          id ||= SecureRandom.hex(5)
+          @id_map[id_a] = id
+          @id_map[id_b] = id
+          id
+        else
+          SecureRandom.hex(5)
+        end
+      @row_ids.push(id)
       end
     end
+
+    # Returns the ID for the row with given row index.
+    def [](idx)
+      call if @row_ids.empty?
+      @row_ids[idx]
+    end
+
   end
 
   class SameEmailOrPhoneMatchingType < OrMatchingCombinator
