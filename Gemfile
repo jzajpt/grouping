@@ -8,4 +8,3 @@ gem "minitest", "~> 5.0"
 gem "slop", "~> 4.8.0"
 gem "rubocop", require: false
 gem "rubocop-performance", require: false
-gem "minitest-filesystem", group: :test

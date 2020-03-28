@@ -15,21 +15,21 @@ class GroupingTest < Minitest::Test
     Grouping::App.start(["-i", "data/input1.csv"])
     header, *csv = CSV.read("output.csv")
     assert_equal "ID", header[0]
-    assert csv.size > 0
+    refute csv.empty?
   end
 
   def test_it_applies_matching_type_same_email
     Grouping::App.start(["-i", "data/input1.csv", "-m", "same_email"])
-    assert_exists "output.csv"
+    assert File.exist?("output.csv")
   end
 
   def test_it_applies_matching_type_same_phone
     Grouping::App.start(["-i", "data/input1.csv", "-m", "same_phone"])
-    assert_exists "output.csv"
+    assert File.exist?("output.csv")
   end
 
   def test_it_applies_matching_type_same_email_or_phone
     Grouping::App.start(["-i", "data/input1.csv", "-m", "same_email_or_phone"])
-    assert_exists "output.csv"
+    assert File.exist?("output.csv")
   end
 end
