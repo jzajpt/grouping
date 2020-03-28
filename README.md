@@ -1,36 +1,24 @@
 # Grouping
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/grouping`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Grouping exercise - identify rows in a CSV file that __may__ represent the
+__same person__ based on a provided __Matching Type__ strategy.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'grouping'
-```
-
-And then execute:
+Clone the repo, make sure you have required ruby version (see `.ruby-version`)
+and install dependencies via bundler:
 
     $ bundle install
 
-Or install it yourself as:
-
-    $ gem install grouping
-
 ## Usage
 
-TODO: Write usage instructions here
+The program can be run using `bin/grouping`:
 
-## Development
+    $ bin/grouping -i [input file] -m [matching type]
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Where matching type can be one of following:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/grouping.
+* same_email - matches records with the same email address
+* same_phone - matches records with the same phone number
+* same_email_or_phone - matches records with the same email address OR the same phone number
 

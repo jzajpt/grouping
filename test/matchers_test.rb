@@ -60,11 +60,14 @@ class MatchersTest < Minitest::Test
     rows = [['(555) 123-4567', 'joe@doe.com'],
             ['444-123-4567', 'jane@doe.com'],
             ['333-123-4567', 'joe@doe.com'],
-            ['444 123-4567', 'janis@doe.com']]
+            ['444 123-4567', 'janis@doe.com'],
+            ['666 321 7654', 'john@gmail.com']]
     matcher = Grouping::SameEmailOrPhoneMatchingType.new(columns, rows)
     assert_equal matcher[0], matcher[2]
     assert_equal matcher[1], matcher[3]
     refute_equal matcher[0], matcher[1]
+    refute_equal matcher[4], matcher[0]
+    refute_equal matcher[4], matcher[1]
   end
 
   def test_same_phone_or_email_identify_matches_emails_and_phones_transiently

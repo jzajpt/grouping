@@ -11,8 +11,10 @@ class GroupingTest < Minitest::Test
     end
   end
 
-  def test_it_reads_input1
+  def test_it_prepends_id_to_output
     Grouping::App.start(['-i', 'data/input1.csv'])
+    header, *csv = CSV.read('output.csv')
+    assert_equal 'ID', header[0]
   end
 
   def test_it_applies_matching_type_same_email
