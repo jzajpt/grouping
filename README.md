@@ -1,5 +1,7 @@
 # Grouping
 
+![Test suite](https://github.com/jzajpt/grouping/workflows/Test%20suite/badge.svg)
+
 Grouping exercise - identify rows in a CSV file that __may__ represent the
 __same person__ based on a provided __Matching Type__ strategy.
 
