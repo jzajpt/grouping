@@ -1,7 +1,7 @@
 require "digest"
 require "securerandom"
 require_relative "./errors"
-require_relative "./phone_numbers"
+require_relative "./utils"
 
 module Grouping
   class Matcher
@@ -72,8 +72,7 @@ module Grouping
       rows.each_with_index do |row, idx|
         id_cols = columns.select do |col|
           value = normalize_value(row[col])
-          next unless value
-          @map[value] > 1
+          value && @map[value] > 1
         end
         new_id = SecureRandom.hex(5)
         id_cols.each do |id_col|
@@ -95,38 +94,28 @@ module Grouping
 
   class SameEmailMatchingType < BaseMatchingType
     def columns
-      @columns ||= begin
-                     column_names.each_index
-                       .select { |key| column_names[key].match(/\Aemail/i) }
-                   end
+      @columns ||= Grouping::Utils.select_matching_columns(column_names,
+                                                           /\Aemail/i)
     end
   end
 
   class SamePhoneMatchingType < BaseMatchingType
     def columns
-      @columns ||= begin
-                     column_names.each_index
-                       .select { |key| column_names[key].match(/\Aphone/i) }
-                   end
+      @columns ||= Grouping::Utils.select_matching_columns(column_names,
+                                                           /\Aphone/i)
     end
 
     private
 
-    # Normalize phone number to digits only and exclude US country code (1)
-    # if present.
     def normalize_value(value)
-      Grouping.normalize_us_phone_number(value)
+      Grouping::Utils.normalize_us_phone_number(value)
     end
   end
 
   class SameEmailOrPhoneMatchingType < BaseMatchingType
     def columns
-      @columns ||= begin
-                     column_names.each_index
-                       .select do |key|
-                         column_names[key].match(/\A(phone|email)/i)
-                       end
-                   end
+      @columns ||= Grouping::Utils.select_matching_columns(column_names,
+                                                           /\A(email|phone)/i)
     end
 
     private
@@ -135,7 +124,7 @@ module Grouping
       if value&.include?("@")
         value
       else
-        Grouping.normalize_us_phone_number(value)
+        Grouping::Utils.normalize_us_phone_number(value)
       end
     end
   end
