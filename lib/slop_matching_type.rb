@@ -5,7 +5,7 @@ module Slop
   class MatchingTypeOption < Option
     def call(value)
       unless Grouping::Matcher::TYPES.include?(value)
-        raise Matcher::UnknownMatcherTypeError.new
+        raise Grouping::UnknownMatcherTypeError.new("#{value} is not a valid matcher")
       end
       type = value.split("_").collect(&:capitalize).join
       Grouping.const_get("#{type}MatchingType")
